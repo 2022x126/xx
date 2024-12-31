@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2025年中越双语跨年倒计时</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      height: 100%;
+      font-family: Arial, sans-serif;
+    }
+
+    .container {
+      position: relative;
+      height: 100%;
+      text-align: center;
+      background-color: #1a1a1a;
+      color: white;
+    }
+
+    .countdown {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      color: #ffffff;
+      text-shadow: 0 0 15px #fff, 0 0 30px #fff, 0 0 45px #fff;
+    }
+
+    h1 {
+      font-size: 5rem;
+      color: #ffffff;
+      text-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+    }
+
+    .country-flag {
+      display: inline-block;
+      margin: 10px;
+      width: 80px;
+      height: 50px;
+      background-size: cover;
+    }
+
+    .china-flag {
+      background-image: url('china-flag.png');
+      position: absolute;
+      top: 20px;
+      left: 20px;
+    }
+
+    .vietnam-flag {
+      background-image: url('vietnam-flag.png');
+      position: absolute;
+      top: 20px;
+      right: 20px;
+    }
+
+    .countdown-timer {
+      font-size: 5rem;
+      color: #ffffff;
+      text-shadow: 0 0 15px #fff, 0 0 30px #fff, 0 0 45px #fff;
+    }
+
+    .text-container {
+      margin-top: 20px;
+    }
+
+    .text-container p {
+      font-size: 1.5rem;
+    }
+
+    /* 满屏飘动小国旗 */
+    .floating-flag {
+      position: absolute;
+      width: 50px;
+      height: 30px;
+      background-size: cover;
+      animation: float-flag 10s infinite linear;
+    }
+
+    @keyframes float-flag {
+      0% {
+        transform: translateY(-100px) translateX(calc(100vw * -0.5)) rotate(0deg);
+      }
+      100% {
+        transform: translateY(100vh) translateX(calc(100vw * 1.5)) rotate(360deg);
+      }
+    }
+
+  </style>
+</head>
+<body class="countdown-page">
+  <div class="container">
+    <canvas id="fireworks"></canvas>
+
+    <div class="countdown">
+      <h1 id="countdown-timer">10</h1>
+
+      <div class="country-flag china-flag"></div>
+      <div class="country-flag vietnam-flag"></div>
+
+      <div class="text-container">
+        <p><span id="chinese-new-year">农历甲辰年</span> <span id="vietnamese-new-year">Năm Canh Thìn</span></p>
+        <p><span id="solar-date">2025年1月1日</span> <span id="vietnamese-solar-date">Ngày 1 tháng 1 năm 2025</span></p>
+        <p id="countdown-text"></p>
+      </div>
+    </div>
+
+    <audio id="background-music" loop>
+      <source src="music.mp3" type="audio/mpeg">
+      您的浏览器不支持音频播放。
+    </audio>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('fireworks');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const countdownTimer = document.getElementById('countdown-timer');
+    const countdownText = document.getElementById('countdown-text');
+    const music = document.getElementById('background-music');
+    let countdownValue = 10;
+
+    // 设置干支纪年和阳历
+    const chineseNewYear = "农历甲辰年";
+    const vietnameseNewYear = "Năm Canh Thìn";
+    const solarDate = "2025年1月1日";
+    const vietnameseSolarDate = "Ngày 1 tháng 1 năm 2025";
+
+    document.getElementById('chinese-new-year').innerText = chineseNewYear;
+    document.getElementById('vietnamese-new-year').innerText = vietnameseNewYear;
+    document.getElementById('solar-date').innerText = solarDate;
+    document.getElementById('vietnamese-solar-date').innerText = vietnameseSolarDate;
+
+    // 自动播放音乐
+    document.addEventListener('DOMContentLoaded', () => {
+      music.play().catch(() => {
+        console.log('用户未允许自动播放音乐。');
+      });
+    });
+
+    function startCountdown() {
+      const countdownDate = new Date().getTime() + (countdownValue * 1000);
+
+      const interval = setInterval(() => {
+        const now = new Date().getTime();
+        const timeRemaining = countdownDate - now;
+
+        const seconds = Math.floor(timeRemaining / 1000);
+
+        countdownTimer.textContent = seconds;
+
+        countdownText.innerHTML = `倒计时: <br> 
+          <strong>${seconds}秒</strong><br>
+          <strong>Thời gian còn lại: <br>${seconds} giây</strong>`;
+
+        if (timeRemaining <= 0) {
+          clearInterval(interval);
+          startFloatingFlags(); // 开始显示并飘动小国旗
+          music.play();
+          countdownText.textContent = "跨年倒计时结束，祝你新年快乐！";
+          countdownTimer.textContent = "新年快乐！";
+          document.querySelector('.china-flag').style.display = 'none';
+          document.querySelector('.vietnam-flag').style.display = 'none';
+        }
+      }, 1000);
+    }
+
+    function startFloatingFlags() {
+      // 创建并显示满屏飘动的小国旗
+      for (let i = 0; i < 20; i++) {
+        let chinaFlag = document.createElement('div');
+        chinaFlag.classList.add('floating-flag');
+        chinaFlag.style.backgroundImage = "url('china-flag.png')";
+        chinaFlag.style.left = `${Math.random() * 100}%`; // 随机X位置
+        chinaFlag.style.top = `${Math.random() * -100}%`; // 随机Y起始位置
+        document.body.appendChild(chinaFlag);
+
+        let vietnamFlag = document.createElement('div');
+        vietnamFlag.classList.add('floating-flag');
+        vietnamFlag.style.backgroundImage = "url('vietnam-flag.png')";
+        vietnamFlag.style.left = `${Math.random() * 100}%`; // 随机X位置
+        vietnamFlag.style.top = `${Math.random() * -100}%`; // 随机Y起始位置
+        document.body.appendChild(vietnamFlag);
+      }
+    }
+
+    startCountdown();
+  </script>
+</body>
+</html>
